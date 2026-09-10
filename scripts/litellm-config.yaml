@@ -1,0 +1,20 @@
+model_list:
+  - model_name: local
+    litellm_params:
+      model: openai/Qwen3.6-35B-A3B-UD-IQ1_M.gguf
+      api_base: http://127.0.0.1:7776/v1
+      api_key: "any"
+    model_info:
+      max_input_tokens: 65536
+      max_context_length: 65536
+  - model_name: Qwen3.6-35B-A3B-UD-IQ1_M.gguf
+    litellm_params:
+      model: openai/Qwen3.6-35B-A3B-UD-IQ1_M.gguf
+      api_base: http://127.0.0.1:7776/v1
+      api_key: "any"
+    model_info:
+      max_input_tokens: 65536
+      max_context_length: 65536
+
+litellm_settings:
+  drop_params: true

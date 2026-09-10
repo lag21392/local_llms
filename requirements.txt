@@ -1,0 +1,4 @@
+# Dependencias del proyecto LlamaCCP
+# pip install -r requirements.txt
+litellm
+huggingface-hub

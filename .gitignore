@@ -1,0 +1,37 @@
+# Modelos GGUF (10-70 GB cada uno)
+models/
+
+# Entorno Python
+.venv/
+__pycache__/
+*.pyc
+
+# Logs
+logs/
+
+# ngrok
+ngrok/
+
+# VSCode settings
+.vscode/settings.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Cache de Hermes
+agentes/hermes/cache/
+agentes/hermes/state.db*
+agentes/hermes/.hermes_history
+agentes/hermes/.skills_prompt_snapshot.json
+agentes/hermes/backups/
+agentes/hermes/auth.lock
+agentes/hermes/.env
+
+# Binarios de Hermes y llamacpp
+agentes/hermes/bin/
+llamacpp-cuda13/
+agentes/hermes/hermes-agent/
+
+# PowerShell temp
+*.tmp
