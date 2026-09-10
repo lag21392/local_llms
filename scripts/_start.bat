@@ -223,23 +223,83 @@ echo.
 
 echo [2/3] Iniciando proxy LiteLLM en puerto %LITELLM_PORT%...
 set PYTHONIOENCODING=utf-8
-start /b "" cmd /c ""%ROOT%\.venv\Scripts\litellm.exe" --port %LITELLM_PORT% --config "%ROOT%\scripts\litellm-config.yaml" >nul 2>&1"
+start /b "" cmd /c ""%ROOT%\.venv\Scripts\litellm.exe" --host 127.0.0.1 --port %LITELLM_PORT% --config "%ROOT%\scripts\litellm-config.yaml" >nul 2>&1"
 
-%SystemRoot%\System32\ping -n 5 127.0.0.1 >nul 2>nul
+set "WAIT=0"
+:waitlitellm
+set /a WAIT+=1
+if !WAIT! GTR 20 (
+    echo FATAL: timeout esperando LiteLLM en puerto %LITELLM_PORT%
+    2>nul taskkill /IM litellm.exe /F
+    2>nul taskkill /IM llama-server.exe /F
+    pause
+    exit /b 1
+)
+%SystemRoot%\System32\ping -n 3 127.0.0.1 >nul 2>nul
+%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe -Command "try { $h=@{Authorization='Bearer %API_KEY%'}; $r=Invoke-WebRequest http://127.0.0.1:%LITELLM_PORT%/v1/models -Headers $h -UseBasicParsing -TimeoutSec 2; if ($r.StatusCode -eq 200) { exit 0 } else { exit 1 } } catch { exit 1 }" >nul 2>nul
+if errorlevel 1 (
+    echo   LiteLLM aun no responde... ^(!WAIT!/20^)
+    goto waitlitellm
+)
+echo   LiteLLM listo!
+echo.
 
-echo [3/3] Iniciando tunel ngrok...
-start /b "" cmd /c ""%ROOT%\ngrok\ngrok.exe" http --url=%NGROK_URL% %LITELLM_PORT% >nul 2>&1"
+echo [3/3] Iniciando tunel ngrok https://%NGROK_URL% ...
+set "NGROK_EXE="
+if exist "%ROOT%\ngrok\ngrok.exe" set "NGROK_EXE=%ROOT%\ngrok\ngrok.exe"
+if not defined NGROK_EXE if exist "%LOCALAPPDATA%\ngrok\ngrok.exe" set "NGROK_EXE=%LOCALAPPDATA%\ngrok\ngrok.exe"
+if not defined NGROK_EXE (
+    echo FATAL: no se encontro ngrok.exe
+    echo Buscado en:
+    echo   %ROOT%\ngrok\ngrok.exe
+    echo   %LOCALAPPDATA%\ngrok\ngrok.exe
+    echo Instala ngrok, autenticalo ^(ngrok config add-authtoken^) y reserva el dominio %NGROK_URL%
+    2>nul taskkill /IM litellm.exe /F
+    2>nul taskkill /IM llama-server.exe /F
+    pause
+    exit /b 1
+)
+if not exist "%ROOT%\logs" mkdir "%ROOT%\logs" >nul 2>nul
+2>nul taskkill /IM ngrok.exe /F
+%SystemRoot%\System32\ping -n 2 127.0.0.1 >nul 2>nul
+start /b "" cmd /c ""!NGROK_EXE!" http --url=%NGROK_URL% %LITELLM_PORT% > "%ROOT%\logs\ngrok.log" 2>&1"
+
+set "WAIT=0"
+:waitngrok
+set /a WAIT+=1
+if !WAIT! GTR 15 (
+    echo FATAL: ngrok no levanto el tunel https://%NGROK_URL%
+    echo Revisa logs\ngrok.log  ^(auth token, dominio reservado, otro ngrok abierto^)
+    2>nul taskkill /IM ngrok.exe /F
+    2>nul taskkill /IM litellm.exe /F
+    2>nul taskkill /IM llama-server.exe /F
+    pause
+    exit /b 1
+)
+%SystemRoot%\System32\ping -n 3 127.0.0.1 >nul 2>nul
+tasklist /FI "IMAGENAME eq ngrok.exe" | find /I "ngrok.exe" >nul
+if errorlevel 1 (
+    echo   Esperando ngrok... ^(!WAIT!/15^)
+    goto waitngrok
+)
+%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe -Command "try { $h=@{Authorization='Bearer %API_KEY%'; 'ngrok-skip-browser-warning'='true'}; $r=Invoke-WebRequest https://%NGROK_URL%/v1/models -Headers $h -UseBasicParsing -TimeoutSec 5; if ($r.StatusCode -eq 200) { exit 0 } else { exit 1 } } catch { exit 1 }" >nul 2>nul
+if errorlevel 1 (
+    echo   Tunel aun no responde... ^(!WAIT!/15^)
+    goto waitngrok
+)
+echo   ngrok listo: https://%NGROK_URL%/v1
+echo.
 
 echo.
 echo ============================================
 echo  !TITLE!
-echo  Modelo   -^> http://%LLAMA_HOST%:%LLAMA_PORT%
-echo  LiteLLM  -^> http://%LLAMA_HOST%:%LITELLM_PORT%   ^(Hermes usa este^)
-echo  ngrok    -^> https://%NGROK_URL%
+echo  Modelo   -^> http://%LLAMA_HOST%:%LLAMA_PORT%/v1
+echo  LiteLLM  -^> http://%LLAMA_HOST%:%LITELLM_PORT%/v1
+echo  Hermes   -^> %HERMES_BASE_URL%
 echo  CTX      -^> !CTX!
 echo ============================================
 echo.
-echo Hermes:  agentes\run-hermes.bat
+echo En esta u otra maquina:  agentes\run-hermes.bat
 echo.
 echo Presiona una tecla para detener todos los servicios.
 pause >nul 2>nul

@@ -9,7 +9,8 @@ set "API_KEY=any"
 set "NGROK_URL=correct-ibex-charmed.ngrok-free.app"
 
 set "HERMES_HOME=%~dp0..\agentes\hermes"
-set "HERMES_BASE_URL=http://127.0.0.1:7777/v1"
+REM Hermes siempre sale por ngrok para poder usarlo desde otra maquina.
+set "HERMES_BASE_URL=https://correct-ibex-charmed.ngrok-free.app/v1"
 set "HERMES_MODEL=local"
 set "HERMES_MIN_CTX=65536"
 

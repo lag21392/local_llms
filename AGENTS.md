@@ -4,13 +4,14 @@ LLM local: llama.cpp + LiteLLM. Hermes usa solo LiteLLM.
 
 ## Como arrancar
 
-1. `scripts/run-3070.bat` o `scripts/run-5070ti.bat`
-2. En otra consola: `agentes/run-hermes.bat`
+1. `scripts/run-3070.bat` o `scripts/run-5070ti.bat` (levanta modelo + LiteLLM + ngrok)
+2. En esta u otra maquina: `agentes/run-hermes.bat`
 
 ## Endpoints
 
-- Hermes / LiteLLM: `http://127.0.0.1:7777/v1`  modelo `local`  api_key `any`
-- llama-server: `http://127.0.0.1:7776/v1`
+- Hermes: `https://correct-ibex-charmed.ngrok-free.app/v1`  modelo `local`  api_key `any`
+- llama-server (local): `http://127.0.0.1:7776/v1`
+- LiteLLM (local): `http://127.0.0.1:7777/v1`
 
 ## Contexto
 

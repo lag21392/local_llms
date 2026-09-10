@@ -1,7 +1,7 @@
 param(
     [Parameter(Mandatory = $true)][int]$Ctx,
     [Parameter(Mandatory = $true)][string]$HermesHome,
-    [string]$BaseUrl = "http://127.0.0.1:7777/v1",
+    [string]$BaseUrl = "https://correct-ibex-charmed.ngrok-free.app/v1",
     [string]$ModelName = "local",
     [string]$BackendModel = "",
     [string]$ApiKey = "any",
@@ -56,13 +56,24 @@ litellm_settings:
 
 New-Item -ItemType Directory -Force -Path $HermesHome | Out-Null
 
+$ngrokHeaders = ""
+if ($BaseUrl -match "ngrok") {
+    $ngrokHeaders = @"
+
+  extra_headers:
+    ngrok-skip-browser-warning: "true"
+  default_headers:
+    ngrok-skip-browser-warning: "true"
+"@
+}
+
 $yaml = @"
 model:
   default: "$ModelName"
   provider: custom
   base_url: "$BaseUrl"
   api_key: "$ApiKey"
-  context_length: $Ctx
+  context_length: $Ctx$ngrokHeaders
 
 compression:
   enabled: true

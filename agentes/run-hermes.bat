@@ -18,7 +18,8 @@ echo.
 echo Hermes  -^> %HERMES_BASE_URL%  modelo=%HERMES_MODEL%  ctx=%HERMES_MIN_CTX%
 echo HERMES_HOME=%HERMES_HOME%
 echo.
-echo Si el modelo no esta arriba, lanza antes scripts\run-3070.bat o scripts\run-5070ti.bat
+echo Hermes sale siempre por ngrok. En otra maquina corre este mismo .bat.
+echo En la PC con GPU el modelo tiene que estar arriba: scripts\run-3070.bat o scripts\run-5070ti.bat
 echo.
 
 if exist "%HERMES_HOME%\bin\hermes.exe" (
