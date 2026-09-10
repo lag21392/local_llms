@@ -5,7 +5,7 @@ set "ROOT=%CD%"
 call "%ROOT%\scripts\config.cmd"
 set "HERMES_HOME=%ROOT%\agentes\hermes"
 
-%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%ROOT%\scripts\_write-runtime-config.ps1" -Ctx %HERMES_MIN_CTX% -HermesHome "%HERMES_HOME%" -SkipLiteLLM -ApiKey "%API_KEY%"
+%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%ROOT%\scripts\_write-runtime-config.ps1" -Ctx %HERMES_MIN_CTX% -HermesHome "%HERMES_HOME%" -BaseUrl "%HERMES_BASE_URL%" -ModelName "%HERMES_MODEL%" -SkipLiteLLM -ApiKey "%API_KEY%"
 if errorlevel 1 (
     echo FATAL: no se pudo escribir la config de Hermes
     pause

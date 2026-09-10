@@ -3,13 +3,13 @@
 Stack local de LLMs con llama.cpp + LiteLLM + Hermes Agent.
 
 ## GPU soportadas
-- RTX 3070 (8GB): modelos IQ1_M / IQ2_XXS / IQ3_XXS (Q3)
-- RTX 5070 Ti (16GB): IQ3_XXS / IQ4_XS / IQ3_XXS (Q3)
+- RTX 3070 (8GB): IQ1_M / IQ2_XXS / Qwen3-8B IQ1_M (Q3)
+- RTX 5070 Ti (16GB): IQ3_XXS / IQ4_XS / Qwen3-8B IQ1_M (Q3)
 
 ## Modelos
 - Qwen3.6-35B-A3B (IQ1_M, IQ3_XXS)
 - Qwen3.8-27B (IQ2_XXS, IQ4_XS)
-- Qwen3-8B-A3B (IQ1_M, para 3070 Q3)
+- Qwen3-8B (IQ1_M, Q3)
 - Qwen3-Next-80B-A3B-Instruct (UD-TQ1_0)
 
 ## Como arrancar

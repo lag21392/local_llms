@@ -10,6 +10,11 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+function Write-Utf8NoBom([string]$Path, [string]$Text) {
+    $enc = New-Object System.Text.UTF8Encoding $false
+    [System.IO.File]::WriteAllText($Path, $Text, $enc)
+}
+
 if (-not $BackendModel) {
     try {
         $m = Invoke-RestMethod "http://127.0.0.1:7776/v1/models" -TimeoutSec 3
@@ -19,41 +24,43 @@ if (-not $BackendModel) {
 if (-not $BackendModel) { $BackendModel = "local" }
 
 if (-not $SkipLiteLLM) {
+    $models = @(
+        @{ name = $ModelName; backend = $BackendModel }
+    )
+    if ($BackendModel -and $BackendModel -ne $ModelName) {
+        $models += @{ name = $BackendModel; backend = $BackendModel }
+    }
+
+    $entries = foreach ($item in $models) {
+        @"
+  - model_name: $($item.name)
+    litellm_params:
+      model: openai/$($item.backend)
+      api_base: http://127.0.0.1:7776/v1
+      api_key: "$ApiKey"
+    model_info:
+      max_input_tokens: $Ctx
+      max_context_length: $Ctx
+"@
+    }
+
     $litellm = @"
 model_list:
-  - model_name: local
-    litellm_params:
-      model: openai/$BackendModel
-      api_base: http://127.0.0.1:7776/v1
-      api_key: "$ApiKey"
-    model_info:
-      max_input_tokens: $Ctx
-      max_context_length: $Ctx
-  - model_name: $BackendModel
-    litellm_params:
-      model: openai/$BackendModel
-      api_base: http://127.0.0.1:7776/v1
-      api_key: "$ApiKey"
-    model_info:
-      max_input_tokens: $Ctx
-      max_context_length: $Ctx
+$($entries -join "`n")
 
 litellm_settings:
   drop_params: true
 "@
-    Set-Content -Path (Join-Path $PSScriptRoot "litellm-config.yaml") -Value $litellm -Encoding UTF8
+    Write-Utf8NoBom (Join-Path $PSScriptRoot "litellm-config.yaml") $litellm
 }
 
 New-Item -ItemType Directory -Force -Path $HermesHome | Out-Null
 
-$hermesUrl = "http://127.0.0.1:7776/v1"
-$hermesModel = $BackendModel
-
 $yaml = @"
 model:
-  default: "$hermesModel"
+  default: "$ModelName"
   provider: custom
-  base_url: "$hermesUrl"
+  base_url: "$BaseUrl"
   api_key: "$ApiKey"
   context_length: $Ctx
 
@@ -76,8 +83,8 @@ agent:
     - skills
     - mcp
 "@
-Set-Content -Path (Join-Path $HermesHome "config.yaml") -Value $yaml -Encoding UTF8
+Write-Utf8NoBom (Join-Path $HermesHome "config.yaml") $yaml
 
 Set-Content -Path (Join-Path $HermesHome ".env") -Value "OPENAI_API_KEY=$ApiKey" -Encoding ASCII
 
-Write-Host "Runtime config: CTX=$Ctx  Hermes=$hermesUrl  model=$hermesModel"
+Write-Host "Runtime config: CTX=$Ctx  Hermes=$BaseUrl  model=$ModelName  backend=$BackendModel"

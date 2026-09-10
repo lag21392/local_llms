@@ -19,19 +19,11 @@ ngrok/
 .DS_Store
 Thumbs.db
 
-# Cache de Hermes
-agentes/hermes/cache/
-agentes/hermes/state.db*
-agentes/hermes/.hermes_history
-agentes/hermes/.skills_prompt_snapshot.json
-agentes/hermes/backups/
-agentes/hermes/auth.lock
-agentes/hermes/.env
+# Hermes instalado (runtime local, no versionar)
+agentes/hermes/
 
-# Binarios de Hermes y llamacpp
-agentes/hermes/bin/
+# Binarios de llamacpp
 llamacpp-cuda13/
-agentes/hermes/hermes-agent/
 
 # PowerShell temp
 *.tmp

@@ -9,7 +9,7 @@ echo.
 echo  1^) Qwen3.6-35B-A3B     UD-IQ3_XXS
 echo  2^) Qwen3.8-27B         UD-IQ4_XS
 echo  3^) Qwen3-Next-80B-A3B  UD-TQ1_0
-echo  4^) Qwen3.6-35B         UD-IQ3_XXS [5070 Ti Q3]
+echo  4^) Qwen3-8B            UD-IQ1_M [Q3]
 echo.
 set /p CHOICE=Elegi modelo [1-4]: 
 if "%CHOICE%"=="1" call "%~dp0_start.bat" 5070ti-qwen36 & goto :eof

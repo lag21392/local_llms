@@ -5,13 +5,12 @@
 # Modelos:
 #   Qwen3.6-35B-A3B (IQ1_M: 3070, IQ3_XXS: 5070 Ti)
 #   Qwen3.8-27B (IQ2_XXS: 3070, IQ4_XS: 5070 Ti)
-#   Qwen3-8B-A3B (IQ1_M: nuevo, para 3070 Q3)
+#   Qwen3-8B (IQ1_M: Q3, denso, 3070/5070 Ti)
 #   Qwen3-Next-80B-A3B-Instruct (UD-TQ1_0)
 
 $ErrorActionPreference = "Stop"
 $Root = Split-Path $PSScriptRoot -Parent
 
-# Verificar hf.exe
 $Hf = Join-Path $Root ".venv\Scripts\hf.exe"
 if (-not (Test-Path $Hf)) {
     Write-Host "ERROR: No se encontro hf.exe en $Hf" -ForegroundColor Red
@@ -44,11 +43,16 @@ $Jobs = @(
         Note  = "3.8 Dynamic 3.0 - mejor para RTX 5070 Ti 16GB"
     },
     @{
-        # Nuevo: Qwen3-8B-A3B para 3070 con Q3
-        Repo  = "unsloth/Qwen3-8B-A3B-GGUF"
-        File  = "Qwen3-8B-A3B-UD-IQ1_M.gguf"
-        Dest  = Join-Path $Root "models\Qwen3-8B-A3B"
-        Note  = "3B parametros Qwen3, IQ1_M - para RTX 3070 Q3"
+        Repo  = "unsloth/Qwen3-8B-GGUF"
+        File  = "Qwen3-8B-UD-IQ1_M.gguf"
+        Dest  = Join-Path $Root "models\Qwen3-8B"
+        Note  = "Qwen3-8B denso, IQ1_M - Q3 para RTX 3070/5070 Ti"
+    },
+    @{
+        Repo  = "unsloth/Qwen3-Next-80B-A3B-Instruct-GGUF"
+        File  = "Qwen3-Next-80B-A3B-Instruct-UD-TQ1_0.gguf"
+        Dest  = Join-Path $Root "models\Qwen3-Next-80B-A3B-Instruct"
+        Note  = "Next superquantizado Unsloth UD-TQ1_0 (ternary 1-bit)"
     }
 )
 
@@ -71,9 +75,18 @@ foreach ($j in $Jobs) {
     New-Item -ItemType Directory -Force -Path $j.Dest | Out-Null
 
     Write-Host "  Descargando..." -ForegroundColor Yellow
-    & $Hf download $j.Repo $j.File --local-dir $j.Dest 2>&1
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "  ERROR: Fallo la descarga de $($j.File)" -ForegroundColor Red
+    $prevEap = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    & $Hf download $j.Repo $j.File --local-dir $j.Dest
+    $hfCode = $LASTEXITCODE
+    $ErrorActionPreference = $prevEap
+    if ($hfCode -ne 0) {
+        Write-Host "  ERROR: Fallo la descarga de $($j.File) (exit $hfCode)" -ForegroundColor Red
+        continue
+    }
+
+    if (-not (Test-Path $out)) {
+        Write-Host "  ERROR: no aparecio el archivo $($j.File)" -ForegroundColor Red
         continue
     }
 
