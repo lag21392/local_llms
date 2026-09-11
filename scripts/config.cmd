@@ -25,9 +25,14 @@ set "CTX_5070TI_QWEN38=65536"
 set "CTX_5070TI_QWEN3=65536"
 set "CTX_5070TI_NEXT=65536"
 
+REM Modelos — quants Unsloth Dynamic V3.0 (SOTA accuracy).
+REM Qwen3.6-35B-A3B: UD-IQ1_M (3070) / UD-IQ3_XXS (5070 Ti)
 set "MODEL_QWEN36_IQ1M=%~dp0..\models\Qwen3.6-35B-A3B\Qwen3.6-35B-A3B-UD-IQ1_M.gguf"
 set "MODEL_QWEN36_IQ3=%~dp0..\models\Qwen3.6-35B-A3B\Qwen3.6-35B-A3B-UD-IQ3_XXS.gguf"
-set "MODEL_QWEN38_IQ2=%~dp0..\models\Qwen3.8-27B\Qwen3.8-27B-UD-IQ2_XXS.gguf"
-set "MODEL_QWEN38_IQ4=%~dp0..\models\Qwen3.8-27B\Qwen3.8-27B-UD-IQ4_XS.gguf"
-set "MODEL_QWEN3_IQ1=%~dp0..\models\Qwen3-8B\Qwen3-8B-UD-IQ1_M.gguf"
+REM Qwen3.8-27B: UD-Q4_K_XL (3070, ~17-19 GB) / UD-Q4_K_M (5070 Ti, ~24 GB)
+set "MODEL_QWEN38_Q4XL=%~dp0..\models\Qwen3.8-27B\Qwen3.8-27B-UD-Q4_K_XL.gguf"
+set "MODEL_QWEN38_Q4M=%~dp0..\models\Qwen3.8-27B\Qwen3.8-27B-UD-Q4_K_M.gguf"
+REM Qwen3-8B: UD-Q4_K_M (ambas GPUs, ~5 GB)
+set "MODEL_QWEN3_Q4M=%~dp0..\models\Qwen3-8B\Qwen3-8B-UD-Q4_K_M.gguf"
+REM Qwen3-Next-80B-A3B-Instruct: UD-TQ1_0
 set "MODEL_NEXT_TQ1=%~dp0..\models\Qwen3-Next-80B-A3B-Instruct\Qwen3-Next-80B-A3B-Instruct-UD-TQ1_0.gguf"

@@ -8,9 +8,9 @@ echo " LlamaCCP  -  RTX 3070 Laptop 8GB"
 echo "============================================"
 echo
 echo " 1) Qwen3.6-35B-A3B     UD-IQ1_M"
-echo " 2) Qwen3.8-27B         UD-IQ2_XXS"
+echo " 2) Qwen3.8-27B         UD-Q4_K_XL"
 echo " 3) Qwen3-Next-80B-A3B  UD-TQ1_0"
-echo " 4) Qwen3-8B            UD-IQ1_M [Q3]"
+echo " 4) Qwen3-8B            UD-Q4_K_M"
 echo
 read -r -p "Elegi modelo [1-4]: " CHOICE
 case "$CHOICE" in

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Descarga los GGUF Unsloth Dynamic para 3070 (8GB) y 5070 Ti (16GB).
+# Descarga los GGUF Unsloth Dynamic V3.0 para 3070 (8GB) y 5070 Ti (16GB).
+# Si no estan, los baja automaticamente al iniciar.
 # Uso:  scripts/download-unsloth-models.sh
 set -euo pipefail
 
@@ -51,7 +52,7 @@ download() {
 }
 
 echo
-echo "Descargando 6 modelos..."
+echo "Descargando 6 modelos (Unsloth Dynamic V3.0)..."
 
 download unsloth/Qwen3.6-35B-A3B-GGUF \
   Qwen3.6-35B-A3B-UD-IQ1_M.gguf \
@@ -64,19 +65,19 @@ download unsloth/Qwen3.6-35B-A3B-GGUF \
   "3.6 Unsloth Dynamic 2.0 - mejor para RTX 5070 Ti 16GB"
 
 download unsloth/Qwen3.8-27B-GGUF \
-  Qwen3.8-27B-UD-IQ2_XXS.gguf \
+  Qwen3.8-27B-UD-Q4_K_XL.gguf \
   "$ROOT/models/Qwen3.8-27B" \
-  "3.8 Dynamic 3.0 - mejor para RTX 3070 8GB"
+  "3.8 Dynamic V3.0 Q4_K_XL - mejor para RTX 3070 8GB (~17-19 GB)"
 
 download unsloth/Qwen3.8-27B-GGUF \
-  Qwen3.8-27B-UD-IQ4_XS.gguf \
+  Qwen3.8-27B-UD-Q4_K_M.gguf \
   "$ROOT/models/Qwen3.8-27B" \
-  "3.8 Dynamic 3.0 - mejor para RTX 5070 Ti 16GB"
+  "3.8 Dynamic V3.0 Q4_K_M - mejor para RTX 5070 Ti 16GB (~24 GB)"
 
 download unsloth/Qwen3-8B-GGUF \
-  Qwen3-8B-UD-IQ1_M.gguf \
+  Qwen3-8B-UD-Q4_K_M.gguf \
   "$ROOT/models/Qwen3-8B" \
-  "Qwen3-8B denso, IQ1_M - Q3 para RTX 3070/5070 Ti"
+  "Qwen3-8B Dynamic V3.0 Q4_K_M - denso, ~5 GB"
 
 download unsloth/Qwen3-Next-80B-A3B-Instruct-GGUF \
   Qwen3-Next-80B-A3B-Instruct-UD-TQ1_0.gguf \

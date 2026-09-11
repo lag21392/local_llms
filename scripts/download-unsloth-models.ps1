@@ -1,11 +1,12 @@
-# Descarga los GGUF Unsloth Dynamic para 3070 (8GB) y 5070 Ti (16GB).
+# Descarga los GGUF Unsloth Dynamic V3.0 para 3070 (8GB) y 5070 Ti (16GB).
+# Si no estan, los baja automaticamente al iniciar.
 # Requiere: c:\LlamaCCP\.venv\Scripts\hf.exe
 # Uso:  powershell -File scripts\download-unsloth-models.ps1
 #
 # Modelos:
 #   Qwen3.6-35B-A3B (IQ1_M: 3070, IQ3_XXS: 5070 Ti)
-#   Qwen3.8-27B (IQ2_XXS: 3070, IQ4_XS: 5070 Ti)
-#   Qwen3-8B (IQ1_M: Q3, denso, 3070/5070 Ti)
+#   Qwen3.8-27B     (Q4_K_XL: 3070, Q4_K_M: 5070 Ti)
+#   Qwen3-8B        (Q4_K_M: 3070/5070 Ti)
 #   Qwen3-Next-80B-A3B-Instruct (UD-TQ1_0)
 
 $ErrorActionPreference = "Stop"
@@ -32,21 +33,21 @@ $Jobs = @(
     },
     @{
         Repo  = "unsloth/Qwen3.8-27B-GGUF"
-        File  = "Qwen3.8-27B-UD-IQ2_XXS.gguf"
+        File  = "Qwen3.8-27B-UD-Q4_K_XL.gguf"
         Dest  = Join-Path $Root "models\Qwen3.8-27B"
-        Note  = "3.8 Dynamic 3.0 - mejor para RTX 3070 8GB"
+        Note  = "3.8 Dynamic V3.0 Q4_K_XL - mejor para RTX 3070 8GB (~17-19 GB)"
     },
     @{
         Repo  = "unsloth/Qwen3.8-27B-GGUF"
-        File  = "Qwen3.8-27B-UD-IQ4_XS.gguf"
+        File  = "Qwen3.8-27B-UD-Q4_K_M.gguf"
         Dest  = Join-Path $Root "models\Qwen3.8-27B"
-        Note  = "3.8 Dynamic 3.0 - mejor para RTX 5070 Ti 16GB"
+        Note  = "3.8 Dynamic V3.0 Q4_K_M - mejor para RTX 5070 Ti 16GB (~24 GB)"
     },
     @{
         Repo  = "unsloth/Qwen3-8B-GGUF"
-        File  = "Qwen3-8B-UD-IQ1_M.gguf"
+        File  = "Qwen3-8B-UD-Q4_K_M.gguf"
         Dest  = Join-Path $Root "models\Qwen3-8B"
-        Note  = "Qwen3-8B denso, IQ1_M - Q3 para RTX 3070/5070 Ti"
+        Note  = "Qwen3-8B Dynamic V3.0 Q4_K_M - denso, ~5 GB"
     },
     @{
         Repo  = "unsloth/Qwen3-Next-80B-A3B-Instruct-GGUF"
@@ -57,7 +58,7 @@ $Jobs = @(
 )
 
 Write-Host ""
-Write-Host "Descargando $($Jobs.Count) modelos..." -ForegroundColor Cyan
+Write-Host "Descargando $($Jobs.Count) modelos (Unsloth Dynamic V3.0)..." -ForegroundColor Cyan
 
 foreach ($j in $Jobs) {
     $out = Join-Path $j.Dest $j.File

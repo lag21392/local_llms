@@ -27,9 +27,14 @@ CTX_5070TI_QWEN38=65536
 CTX_5070TI_QWEN3=65536
 CTX_5070TI_NEXT=65536
 
+# Modelos — quants Unsloth Dynamic V3.0 (SOTA accuracy).
+# Qwen3.6-35B-A3B: UD-IQ1_M (3070) / UD-IQ3_XXS (5070 Ti)
 MODEL_QWEN36_IQ1M="$ROOT/models/Qwen3.6-35B-A3B/Qwen3.6-35B-A3B-UD-IQ1_M.gguf"
 MODEL_QWEN36_IQ3="$ROOT/models/Qwen3.6-35B-A3B/Qwen3.6-35B-A3B-UD-IQ3_XXS.gguf"
-MODEL_QWEN38_IQ2="$ROOT/models/Qwen3.8-27B/Qwen3.8-27B-UD-IQ2_XXS.gguf"
-MODEL_QWEN38_IQ4="$ROOT/models/Qwen3.8-27B/Qwen3.8-27B-UD-IQ4_XS.gguf"
-MODEL_QWEN3_IQ1="$ROOT/models/Qwen3-8B/Qwen3-8B-UD-IQ1_M.gguf"
+# Qwen3.8-27B: UD-Q4_K_XL (3070, ~17-19 GB) / UD-Q4_K_M (5070 Ti, ~24 GB)
+MODEL_QWEN38_Q4XL="$ROOT/models/Qwen3.8-27B/Qwen3.8-27B-UD-Q4_K_XL.gguf"
+MODEL_QWEN38_Q4M="$ROOT/models/Qwen3.8-27B/Qwen3.8-27B-UD-Q4_K_M.gguf"
+# Qwen3-8B: UD-Q4_K_M (ambas GPUs, ~5 GB)
+MODEL_QWEN3_Q4M="$ROOT/models/Qwen3-8B/Qwen3-8B-UD-Q4_K_M.gguf"
+# Qwen3-Next-80B-A3B-Instruct: UD-TQ1_0
 MODEL_NEXT_TQ1="$ROOT/models/Qwen3-Next-80B-A3B-Instruct/Qwen3-Next-80B-A3B-Instruct-UD-TQ1_0.gguf"

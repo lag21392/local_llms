@@ -25,8 +25,8 @@ if /i "%PROFILE%"=="3070-qwen36" (
     set "EXTRA=--n-cpu-moe 999"
     set "GPU_LABEL=RTX 3070 8GB"
 ) else if /i "%PROFILE%"=="3070-qwen38" (
-    set "TITLE=Qwen3.8-27B UD-IQ2_XXS [3070]"
-    set "MODEL=%MODEL_QWEN38_IQ2%"
+    set "TITLE=Qwen3.8-27B UD-Q4_K_XL [3070]"
+    set "MODEL=%MODEL_QWEN38_Q4XL%"
     set "CTX=%CTX_3070_QWEN38%"
     set "FIT_TARGET=500"
     set "FIT_CTX=4096"
@@ -53,8 +53,8 @@ if /i "%PROFILE%"=="3070-qwen36" (
     set "EXTRA="
     set "GPU_LABEL=RTX 3070 8GB"
 ) else if /i "%PROFILE%"=="3070-qwen3" (
-    set "TITLE=Qwen3-8B UD-IQ1_M [3070 Q3]"
-    set "MODEL=%MODEL_QWEN3_IQ1%"
+    set "TITLE=Qwen3-8B UD-Q4_K_M [3070]"
+    set "MODEL=%MODEL_QWEN3_Q4M%"
     set "CTX=%CTX_3070_QWEN3%"
     set "FIT_TARGET=500"
     set "FIT_CTX=4096"
@@ -81,8 +81,8 @@ if /i "%PROFILE%"=="3070-qwen36" (
     set "EXTRA="
     set "GPU_LABEL=RTX 5070 Ti 16GB"
 ) else if /i "%PROFILE%"=="5070ti-qwen38" (
-    set "TITLE=Qwen3.8-27B UD-IQ4_XS [5070 Ti]"
-    set "MODEL=%MODEL_QWEN38_IQ4%"
+    set "TITLE=Qwen3.8-27B UD-Q4_K_M [5070 Ti]"
+    set "MODEL=%MODEL_QWEN38_Q4M%"
     set "CTX=%CTX_5070TI_QWEN38%"
     set "FIT_TARGET=400"
     set "FIT_CTX=8192"
@@ -109,8 +109,8 @@ if /i "%PROFILE%"=="3070-qwen36" (
     set "EXTRA="
     set "GPU_LABEL=RTX 5070 Ti 16GB"
 ) else if /i "%PROFILE%"=="5070ti-qwen3" (
-    set "TITLE=Qwen3-8B UD-IQ1_M [5070 Ti Q3]"
-    set "MODEL=%MODEL_QWEN3_IQ1%"
+    set "TITLE=Qwen3-8B UD-Q4_K_M [5070 Ti]"
+    set "MODEL=%MODEL_QWEN3_Q4M%"
     set "CTX=%CTX_5070TI_QWEN3%"
     set "FIT_TARGET=400"
     set "FIT_CTX=8192"
