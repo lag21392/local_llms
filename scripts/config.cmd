@@ -1,5 +1,6 @@
 @echo off
-REM Fuente unica de configuracion. Los .bat hacen: call "%~dp0config.cmd"
+REM Fuente unica de configuracion en Windows. Los .bat hacen: call "%~dp0config.cmd"
+REM En Linux usar scripts/config.sh (mantener ambos en sync).
 REM CTX es la variable clave para Hermes (minimo 65536 tokens).
 
 set "LLAMA_HOST=127.0.0.1"

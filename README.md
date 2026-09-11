@@ -13,11 +13,21 @@ Stack local de LLMs con llama.cpp + LiteLLM + Hermes Agent.
 - Qwen3-Next-80B-A3B-Instruct (UD-TQ1_0)
 
 ## Como arrancar
+
+### Windows (PC con GPU)
 1. Descargar modelos: `powershell -File scripts\download-unsloth-models.ps1`
-2. Arrancar stack (esta maquina, con GPU): `scripts\run-3070.bat` o `scripts\run-5070ti.bat`
+2. Arrancar stack: `scripts\run-3070.bat` o `scripts\run-5070ti.bat`
 3. Lanzar Hermes (esta maquina u otra): `agentes\run-hermes.bat`
 
-Hermes siempre usa el tunel publico de ngrok. En la PC del modelo hace falta `ngrok.exe` en `ngrok\ngrok.exe` o en `%LOCALAPPDATA%\ngrok\ngrok.exe`, ya autenticado, con el dominio reservado.
+### Linux (cliente Hermes contra LLM remota)
+1. Instalar Hermes una vez: `agentes/install-hermes.sh`
+2. En la PC con GPU, dejar el stack arriba (`run-3070` / `run-5070ti`)
+3. En esta maquina: `agentes/run-hermes.sh`
+4. En Cursor, ACP Client: conectar **Hermes Agent** (usa `agentes/run-hermes-acp.sh`). Recarga la ventana si no aparece.
+
+Hermes habla solo con LiteLLM por ngrok (`https://correct-ibex-charmed.ngrok-free.app/v1`, modelo `local`, api_key `any`). No hace falta GPU en el cliente.
+
+Si tambien queres levantar el stack en Linux: `scripts/download-unsloth-models.sh` y luego `scripts/run-3070.sh` o `scripts/run-5070ti.sh` (hace falta `llama-server` en `llamacpp-cuda13/` o en el PATH, venv con LiteLLM, y ngrok autenticado).
 
 ## Endpoints
 - Hermes: `https://correct-ibex-charmed.ngrok-free.app/v1`  modelo `local`  api_key `any`
@@ -25,4 +35,7 @@ Hermes siempre usa el tunel publico de ngrok. En la PC del modelo hace falta `ng
 - LiteLLM (local): `http://127.0.0.1:7777/v1`
 
 ## Configuracion
-Editar `scripts/config.cmd` para ajustar CTX, puertos, API key y `NGROK_URL`.
+- Windows: `scripts/config.cmd`
+- Linux: `scripts/config.sh`
+
+Ahi se ajustan CTX, puertos, API key y `NGROK_URL` / `HERMES_BASE_URL`.
