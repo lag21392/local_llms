@@ -27,8 +27,9 @@ Editar `scripts/config.cmd` (Windows) o `scripts/config.sh` (Linux) (`CTX_3070_*
 ## Modelos
 
 - Qwen3.6-35B-A3B (3070: IQ1_M, 5070 Ti: IQ3_XXS)
-- Qwen3.8-27B (3070: IQ2_XXS, 5070 Ti: IQ4_XS)
-- Qwen3-8B (3070/5070 Ti: IQ1_M Q3)
+- Qwen3.8-27B (3070: Q4_K_XL, 5070 Ti: Q4_K_M)
+- Qwen3-8B (3070/5070 Ti: Q4_K_M)
 - Qwen3-Next-80B UD-TQ1_0
+- Bonsai 2 27B PTQ1_0 (5070 Ti, fork PrismML de llama.cpp)
 
 No pidas API keys de nube. Para parar el stack, usa la ventana del run-*.bat o Enter en el run-*.sh.

@@ -24,6 +24,7 @@ agentes/hermes/
 
 # Binarios de llamacpp
 llamacpp-cuda13/
+llamacpp-prism/
 
 # PowerShell temp
 *.tmp

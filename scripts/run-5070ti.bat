@@ -10,11 +10,13 @@ echo  1^) Qwen3.6-35B-A3B     UD-IQ3_XXS
 echo  2^) Qwen3.8-27B         UD-Q4_K_M
 echo  3^) Qwen3-Next-80B-A3B  UD-TQ1_0
 echo  4^) Qwen3-8B            UD-Q4_K_M
+echo  5^) Bonsai 2 27B        PTQ1_0  [Prism]
 echo.
-set /p CHOICE=Elegi modelo [1-4]: 
+set /p CHOICE=Elegi modelo [1-5]: 
 if "%CHOICE%"=="1" call "%~dp0_start.bat" 5070ti-qwen36 & goto :eof
 if "%CHOICE%"=="2" call "%~dp0_start.bat" 5070ti-qwen38 & goto :eof
 if "%CHOICE%"=="3" call "%~dp0_start.bat" 5070ti-next & goto :eof
 if "%CHOICE%"=="4" call "%~dp0_start.bat" 5070ti-qwen3 & goto :eof
+if "%CHOICE%"=="5" call "%~dp0_start.bat" 5070ti-bonsai & goto :eof
 echo Opcion invalida.
 pause

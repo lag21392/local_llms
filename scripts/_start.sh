@@ -9,7 +9,7 @@ source "$ROOT/scripts/config.sh"
 
 PROFILE="${1:-}"
 if [[ -z "$PROFILE" ]]; then
-  echo "Uso: _start.sh 3070-qwen36 | 3070-qwen38 | 3070-next | 3070-qwen3 | 5070ti-qwen36 | 5070ti-qwen38 | 5070ti-next | 5070ti-qwen3"
+  echo "Uso: _start.sh 3070-qwen36 | 3070-qwen38 | 3070-next | 3070-qwen3 | 5070ti-qwen36 | 5070ti-qwen38 | 5070ti-next | 5070ti-qwen3 | 5070ti-bonsai"
   exit 1
 fi
 
@@ -26,6 +26,10 @@ PEN=""
 REASON=""
 EXTRA=""
 GPU_LABEL=""
+LLAMA_BIN_OVERRIDE=""
+CTK="q4_0"
+CTV="q4_0"
+NGL=""
 
 case "$PROFILE" in
   3070-qwen36)
@@ -100,6 +104,19 @@ case "$PROFILE" in
     EXTRA=""
     GPU_LABEL="RTX 5070 Ti 16GB"
     ;;
+  5070ti-bonsai)
+    TITLE="Bonsai 2 27B PTQ1_0 [5070 Ti]"
+    MODEL="$MODEL_BONSAI2_PTQ1"
+    CTX="$CTX_5070TI_BONSAI"
+    FIT_TARGET=400; FIT_CTX=8192; BATCH=2048; UBATCH=1024
+    TEMP=0.6; TOPP=0.95; PEN=0.0; REASON=on
+    EXTRA="--no-mmproj"
+    GPU_LABEL="RTX 5070 Ti 16GB"
+    LLAMA_BIN_OVERRIDE="$ROOT/llamacpp-prism/llama-server"
+    CTK="q8_0"
+    CTV="q8_0"
+    NGL=99
+    ;;
   *)
     echo "Perfil desconocido: $PROFILE"
     exit 1
@@ -130,11 +147,21 @@ if [[ ! -f "$MODEL" ]]; then
   echo "FATAL: no esta el modelo:"
   echo "  $MODEL"
   echo "Corre:  scripts/download-unsloth-models.sh"
+  echo "   o:  powershell -File scripts/download-bonsai.ps1"
   exit 1
 fi
 
 LLAMA_BIN=""
-if [[ -x "$ROOT/llamacpp-cuda13/llama-server" ]]; then
+if [[ -n "$LLAMA_BIN_OVERRIDE" ]]; then
+  if [[ -x "$LLAMA_BIN_OVERRIDE" ]]; then
+    LLAMA_BIN="$LLAMA_BIN_OVERRIDE"
+  else
+    echo "FATAL: no esta llama-server:"
+    echo "  $LLAMA_BIN_OVERRIDE"
+    echo "Si es Bonsai 2, corre:  powershell -File scripts/download-bonsai.ps1"
+    exit 1
+  fi
+elif [[ -x "$ROOT/llamacpp-cuda13/llama-server" ]]; then
   LLAMA_BIN="$ROOT/llamacpp-cuda13/llama-server"
 elif command -v llama-server >/dev/null 2>&1; then
   LLAMA_BIN="$(command -v llama-server)"
@@ -205,7 +232,11 @@ trap cleanup EXIT INT TERM
 mkdir -p "$ROOT/logs"
 
 echo "[1/3] Iniciando llama-server en puerto $LLAMA_PORT..."
-echo "  $GPU_LABEL  |  --fit  |  --parallel 1  |  ctx $CTX  |  KV q4_0  |  --jinja"
+OFFLOAD_ARGS=(--fit on --fit-ctx "$FIT_CTX" --fit-target "$FIT_TARGET")
+if [[ -n "$NGL" ]]; then
+  OFFLOAD_ARGS=(-ngl "$NGL")
+fi
+echo "  $GPU_LABEL  |  ${OFFLOAD_ARGS[*]}  |  --parallel 1  |  ctx $CTX  |  KV $CTK  |  --jinja"
 echo
 
 # EXTRA se parte en argumentos si no esta vacio
@@ -214,10 +245,10 @@ echo
   -m "$MODEL" \
   --host "$LLAMA_HOST" --port "$LLAMA_PORT" \
   --main-gpu 0 --split-mode none \
-  --fit on --fit-ctx "$FIT_CTX" --fit-target "$FIT_TARGET" \
+  "${OFFLOAD_ARGS[@]}" \
   --parallel 1 --cache-ram 0 \
   -c "$CTX" -fa on \
-  -ctk q4_0 -ctv q4_0 \
+  -ctk "$CTK" -ctv "$CTV" \
   -b "$BATCH" -ub "$UBATCH" -t 8 -tb 8 \
   --temp "$TEMP" --top-p "$TOPP" --top-k 20 --min-p 0.0 --presence-penalty "$PEN" \
   --reasoning "$REASON" --jinja \

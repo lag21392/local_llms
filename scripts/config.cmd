@@ -24,6 +24,7 @@ set "CTX_5070TI_QWEN36=65536"
 set "CTX_5070TI_QWEN38=65536"
 set "CTX_5070TI_QWEN3=65536"
 set "CTX_5070TI_NEXT=65536"
+set "CTX_5070TI_BONSAI=65536"
 
 REM Modelos — quants Unsloth Dynamic V3.0 (SOTA accuracy).
 REM Qwen3.6-35B-A3B: UD-IQ1_M (3070) / UD-IQ3_XXS (5070 Ti)
@@ -36,3 +37,4 @@ REM Qwen3-8B: UD-Q4_K_M (ambas GPUs, ~5 GB)
 set "MODEL_QWEN3_Q4M=%~dp0..\models\Qwen3-8B\Qwen3-8B-UD-Q4_K_M.gguf"
 REM Qwen3-Next-80B-A3B-Instruct: UD-TQ1_0
 set "MODEL_NEXT_TQ1=%~dp0..\models\Qwen3-Next-80B-A3B-Instruct\Qwen3-Next-80B-A3B-Instruct-UD-TQ1_0.gguf"
+set "MODEL_BONSAI2_PTQ1=%~dp0..\models\Ternary-Bonsai-2-27B\Ternary-Bonsai-2-27B-PTQ1_0.gguf"

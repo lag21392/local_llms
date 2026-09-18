@@ -6,7 +6,7 @@ call "%ROOT%\scripts\config.cmd"
 
 set "PROFILE=%~1"
 if "%PROFILE%"=="" (
-    echo Uso: _start.bat 3070-qwen36 ^| 3070-qwen38 ^| 3070-next ^| 3070-qwen3 ^| 5070ti-qwen36 ^| 5070ti-qwen38 ^| 5070ti-next ^| 5070ti-qwen3
+    echo Uso: _start.bat 3070-qwen36 ^| 3070-qwen38 ^| 3070-next ^| 3070-qwen3 ^| 5070ti-qwen36 ^| 5070ti-qwen38 ^| 5070ti-next ^| 5070ti-qwen3 ^| 5070ti-bonsai
     exit /b 1
 )
 
@@ -122,10 +122,33 @@ if /i "%PROFILE%"=="3070-qwen36" (
     set "REASON=auto"
     set "EXTRA="
     set "GPU_LABEL=RTX 5070 Ti 16GB"
+) else if /i "%PROFILE%"=="5070ti-bonsai" (
+    set "TITLE=Bonsai 2 27B PTQ1_0 [5070 Ti]"
+    set "MODEL=%MODEL_BONSAI2_PTQ1%"
+    set "CTX=%CTX_5070TI_BONSAI%"
+    set "FIT_TARGET=400"
+    set "FIT_CTX=8192"
+    set "BATCH=2048"
+    set "UBATCH=1024"
+    set "TEMP=0.6"
+    set "TOPP=0.95"
+    set "PEN=0.0"
+    set "REASON=on"
+    set "EXTRA=--no-mmproj"
+    set "GPU_LABEL=RTX 5070 Ti 16GB"
+    set "LLAMA_BIN=%ROOT%\llamacpp-prism\llama-server.exe"
+    set "OFFLOAD=-ngl 99"
+    set "CTK=q8_0"
+    set "CTV=q8_0"
 ) else (
     echo Perfil desconocido: %PROFILE%
     exit /b 1
 )
+
+if not defined LLAMA_BIN set "LLAMA_BIN=%ROOT%\llamacpp-cuda13\llama-server.exe"
+if not defined CTK set "CTK=q4_0"
+if not defined CTV set "CTV=q4_0"
+if not defined OFFLOAD set "OFFLOAD=--fit on --fit-ctx !FIT_CTX! --fit-target !FIT_TARGET!"
 
 if "!CTX!"=="" (
     echo FATAL: CTX vacio para el perfil %PROFILE%. Revisa scripts\config.cmd
@@ -151,6 +174,15 @@ if not exist "!MODEL!" (
     echo FATAL: no esta el modelo:
     echo   !MODEL!
     echo Corre:  powershell -File scripts\download-unsloth-models.ps1
+    echo    o:  powershell -File scripts\download-bonsai.ps1
+    pause
+    exit /b 1
+)
+if not exist "!LLAMA_BIN!" (
+    echo.
+    echo FATAL: no esta llama-server:
+    echo   !LLAMA_BIN!
+    echo Si es Bonsai 2, corre:  powershell -File scripts\download-bonsai.ps1
     pause
     exit /b 1
 )
@@ -177,17 +209,17 @@ if errorlevel 1 (
 )
 
 echo [1/3] Iniciando llama-server en puerto %LLAMA_PORT%...
-echo   !GPU_LABEL!  ^|  --fit  ^|  --parallel 1  ^|  ctx !CTX!  ^|  KV q4_0  ^|  --jinja
+echo   !GPU_LABEL!  ^|  !OFFLOAD!  ^|  --parallel 1  ^|  ctx !CTX!  ^|  KV !CTK!  ^|  --jinja
 echo.
 
-start /b "" "%ROOT%\llamacpp-cuda13\llama-server.exe" ^
+start /b "" "!LLAMA_BIN!" ^
   -m "!MODEL!" ^
   --host %LLAMA_HOST% --port %LLAMA_PORT% ^
   --main-gpu 0 --split-mode none ^
-  --fit on --fit-ctx !FIT_CTX! --fit-target !FIT_TARGET! ^
+  !OFFLOAD! ^
   --parallel 1 --cache-ram 0 ^
   -c !CTX! -fa on ^
-  -ctk q4_0 -ctv q4_0 ^
+  -ctk !CTK! -ctv !CTV! ^
   -b !BATCH! -ub !UBATCH! -t 8 -tb 8 ^
   --temp !TEMP! --top-p !TOPP! --top-k 20 --min-p 0.0 --presence-penalty !PEN! ^
   --reasoning !REASON! --jinja ^

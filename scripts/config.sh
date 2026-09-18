@@ -26,6 +26,7 @@ CTX_5070TI_QWEN36=65536
 CTX_5070TI_QWEN38=65536
 CTX_5070TI_QWEN3=65536
 CTX_5070TI_NEXT=65536
+CTX_5070TI_BONSAI=65536
 
 # Modelos — quants Unsloth Dynamic V3.0 (SOTA accuracy).
 # Qwen3.6-35B-A3B: UD-IQ1_M (3070) / UD-IQ3_XXS (5070 Ti)
@@ -38,3 +39,4 @@ MODEL_QWEN38_Q4M="$ROOT/models/Qwen3.8-27B/Qwen3.8-27B-UD-Q4_K_M.gguf"
 MODEL_QWEN3_Q4M="$ROOT/models/Qwen3-8B/Qwen3-8B-UD-Q4_K_M.gguf"
 # Qwen3-Next-80B-A3B-Instruct: UD-TQ1_0
 MODEL_NEXT_TQ1="$ROOT/models/Qwen3-Next-80B-A3B-Instruct/Qwen3-Next-80B-A3B-Instruct-UD-TQ1_0.gguf"
+MODEL_BONSAI2_PTQ1="$ROOT/models/Ternary-Bonsai-2-27B/Ternary-Bonsai-2-27B-PTQ1_0.gguf"

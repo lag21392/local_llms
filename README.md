@@ -2,18 +2,24 @@
 
 Stack local de LLMs con llama.cpp + LiteLLM + Hermes Agent.
 
+## GPU soportadas
+- RTX 3070 (8GB): IQ1_M / Q4_K_XL / Qwen3-8B Q4_K_M
+- RTX 5070 Ti (16GB): IQ3_XXS / Q4_K_M / Qwen3-8B Q4_K_M / Bonsai 2 PTQ1_0
+
 ## Modelos
 
 - Qwen3.6-35B-A3B (3070: UD-IQ1_M, 5070 Ti: UD-IQ3_XXS)
 - Qwen3.8-27B (3070: UD-Q4_K_XL, 5070 Ti: UD-Q4_K_M)
 - Qwen3-8B (3070/5070 Ti: UD-Q4_K_M)
 - Qwen3-Next-80B-A3B-Instruct (UD-TQ1_0)
+- Bonsai 2 27B (PTQ1_0, Prism ML; requiere `llamacpp-prism`)
 
 ## Como arrancar
 
 ### Windows (PC con GPU)
 1. Descargar modelos: `powershell -File scripts\download-unsloth-models.ps1`
-2. Arrancar stack: `scripts\run-3070.bat` o `scripts\run-5070ti.bat`
+   Bonsai 2: `powershell -File scripts\download-bonsai.ps1`
+2. Arrancar stack (esta maquina, con GPU): `scripts\run-3070.bat` o `scripts\run-5070ti.bat`
 3. Lanzar Hermes (esta maquina u otra): `agentes\run-hermes.bat`
 
 ### Linux (cliente Hermes contra LLM remota)
@@ -24,7 +30,7 @@ Stack local de LLMs con llama.cpp + LiteLLM + Hermes Agent.
 
 Hermes habla solo con LiteLLM por ngrok (`https://correct-ibex-charmed.ngrok-free.app/v1`, modelo `local`, api_key `any`). No hace falta GPU en el cliente.
 
-Si tambien queres levantar el stack en Linux: `scripts/download-unsloth-models.sh` y luego `scripts/run-3070.sh` o `scripts/run-5070ti.sh` (hace falta `llama-server` en `llamacpp-cuda13/` o en el PATH, venv con LiteLLM, y ngrok autenticado).
+Si tambien queres levantar el stack en Linux: `scripts/download-unsloth-models.sh` y luego `scripts/run-3070.sh` o `scripts/run-5070ti.sh` (hace falta `llama-server` en `llamacpp-cuda13/` o en el PATH, venv con LiteLLM, y ngrok autenticado). Para Bonsai 2 hace falta el fork Prism en `llamacpp-prism/`.
 
 ## Endpoints
 
