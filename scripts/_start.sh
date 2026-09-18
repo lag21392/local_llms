@@ -108,13 +108,13 @@ case "$PROFILE" in
     TITLE="Bonsai 2 27B PTQ1_0 [5070 Ti]"
     MODEL="$MODEL_BONSAI2_PTQ1"
     CTX="$CTX_5070TI_BONSAI"
-    FIT_TARGET=400; FIT_CTX=8192; BATCH=2048; UBATCH=1024
+    FIT_TARGET=400; FIT_CTX=8192; BATCH=4096; UBATCH=2048
     TEMP=0.6; TOPP=0.95; PEN=0.0; REASON=on
     EXTRA="--no-mmproj"
     GPU_LABEL="RTX 5070 Ti 16GB"
     LLAMA_BIN_OVERRIDE="$ROOT/llamacpp-prism/llama-server"
-    CTK="q8_0"
-    CTV="q8_0"
+    CTK="f16"
+    CTV="f16"
     NGL=99
     ;;
   *)
@@ -246,7 +246,7 @@ echo
   --host "$LLAMA_HOST" --port "$LLAMA_PORT" \
   --main-gpu 0 --split-mode none \
   "${OFFLOAD_ARGS[@]}" \
-  --parallel 1 --cache-ram 0 \
+  --parallel 1 --cache-ram 0 --no-host --load-mode none \
   -c "$CTX" -fa on \
   -ctk "$CTK" -ctv "$CTV" \
   -b "$BATCH" -ub "$UBATCH" -t 8 -tb 8 \
