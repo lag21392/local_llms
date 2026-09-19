@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Arranca llama-server + LiteLLM + ngrok para un perfil.
+# Arranca llama-server standalone (sin LiteLLM/ngrok/Hermes) para un perfil.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -9,7 +9,7 @@ source "$ROOT/scripts/config.sh"
 
 PROFILE="${1:-}"
 if [[ -z "$PROFILE" ]]; then
-  echo "Uso: _start.sh 3070-qwen36 | 3070-qwen38 | 3070-next | 3070-qwen3 | 5070ti-qwen36 | 5070ti-qwen38 | 5070ti-next | 5070ti-qwen3 | 5070ti-bonsai"
+  echo "Uso: _start.sh 3070-qwen36 | 3070-qwen36-iq2 | 3070-qwen38 | 3070-qwen3 | 3070-bonsai | 5070ti-qwen36 | 5070ti-qwen38 | 5070ti-next | 5070ti-qwen3 | 5070ti-bonsai"
   exit 1
 fi
 
@@ -33,40 +33,61 @@ NGL=""
 
 case "$PROFILE" in
   3070-qwen36)
-    TITLE="Qwen3.6-35B UD-IQ1_M [3070]"
+    TITLE="Qwen3.6-35B UD-IQ1_M [3070-OPT]"
     MODEL="$MODEL_QWEN36_IQ1M"
     CTX="$CTX_3070_QWEN36"
-    FIT_TARGET=500; FIT_CTX=4096; BATCH=1024; UBATCH=256
+    FIT_TARGET=400; FIT_CTX=8192; BATCH=1536; UBATCH=384
     TEMP=0.6; TOPP=0.95; PEN=0.0; REASON=auto
     EXTRA="--n-cpu-moe 999"
     GPU_LABEL="RTX 3070 8GB"
+    CTK="q4_0"
+    CTV="q4_0"
+    ;;
+  3070-qwen36-iq2)
+    TITLE="Qwen3.6-35B IQ2_S [3070-ALT]"
+    MODEL="$MODEL_QWEN36_IQ2"
+    CTX="$CTX_3070_QWEN36"
+    FIT_TARGET=400; FIT_CTX=8192; BATCH=1536; UBATCH=384
+    TEMP=0.6; TOPP=0.95; PEN=0.0; REASON=auto
+    EXTRA="--n-cpu-moe 999"
+    GPU_LABEL="RTX 3070 8GB"
+    CTK="q4_0"
+    CTV="q4_0"
     ;;
   3070-qwen38)
-    TITLE="Qwen3.8-27B UD-Q4_K_XL [3070]"
-    MODEL="$MODEL_QWEN38_Q4XL"
+    TITLE="Qwen3.8-27B UD-IQ2_XXS [3070-OPT]"
+    MODEL="$MODEL_QWEN38_IQ2XXS"
     CTX="$CTX_3070_QWEN38"
-    FIT_TARGET=500; FIT_CTX=4096; BATCH=2048; UBATCH=512
+    FIT_TARGET=350; FIT_CTX=4096; BATCH=1024; UBATCH=256
     TEMP=1.0; TOPP=0.95; PEN=0.0; REASON=on
     EXTRA="--no-mmproj"
     GPU_LABEL="RTX 3070 8GB"
-    ;;
-  3070-next)
-    TITLE="Qwen3-Next-80B UD-TQ1_0 [3070]"
-    MODEL="$MODEL_NEXT_TQ1"
-    CTX="$CTX_3070_NEXT"
-    FIT_TARGET=500; FIT_CTX=4096; BATCH=512; UBATCH=256
-    TEMP=0.7; TOPP=0.80; PEN=1.5; REASON=auto
-    EXTRA=""
-    GPU_LABEL="RTX 3070 8GB"
+    CTK="q4_0"
+    CTV="q4_0"
     ;;
   3070-qwen3)
-    TITLE="Qwen3-8B UD-Q4_K_M [3070]"
-    MODEL="$MODEL_QWEN3_Q4M"
+    TITLE="Qwen3-8B UD-IQ1_M [3070-64K]"
+    MODEL="$MODEL_QWEN3_IQ1M"
     CTX="$CTX_3070_QWEN3"
-    FIT_TARGET=500; FIT_CTX=4096; BATCH=1024; UBATCH=256
+    FIT_TARGET=300; FIT_CTX=65536; BATCH=1024; UBATCH=256
     TEMP=0.6; TOPP=0.95; PEN=0.0; REASON=auto
     EXTRA=""
     GPU_LABEL="RTX 3070 8GB"
+    CTK="q4_0"
+    CTV="q4_0"
+    ;;
+  3070-bonsai)
+    TITLE="Bonsai 2 27B PTQ1_0 [3070-OPT]"
+    MODEL="$MODEL_BONSAI2_PTQ1"
+    CTX="$CTX_3070_BONSAI"
+    FIT_TARGET=400; FIT_CTX=8192; BATCH=2048; UBATCH=512
+    TEMP=0.6; TOPP=0.95; PEN=0.0; REASON=on
+    EXTRA="--no-mmproj"
+    GPU_LABEL="RTX 3070 8GB"
+    LLAMA_BIN_OVERRIDE="$ROOT/llamacpp-prism/llama-server"
+    CTK="q4_0"
+    CTV="q4_0"
+    NGL=99
     ;;
   5070ti-qwen36)
     TITLE="Qwen3.6-35B UD-IQ3_XXS [5070 Ti]"
@@ -246,7 +267,7 @@ echo
   --host "$LLAMA_HOST" --port "$LLAMA_PORT" \
   --main-gpu 0 --split-mode none \
   "${OFFLOAD_ARGS[@]}" \
-  --parallel 1 --cache-ram 0 --no-host --load-mode none \
+  --parallel 1 --cache-ram 0 --no-host \
   -c "$CTX" -fa on \
   -ctk "$CTK" -ctv "$CTV" \
   -b "$BATCH" -ub "$UBATCH" -t 8 -tb 8 \

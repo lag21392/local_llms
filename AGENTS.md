@@ -1,35 +1,39 @@
 # LlamaCCP
 
-LLM local: llama.cpp + LiteLLM. Hermes usa solo LiteLLM.
+LLM local: solo llama.cpp. Sin LiteLLM, sin ngrok, sin Hermes.
 
 ## Como arrancar
 
 PC con GPU (Windows o Linux):
-1. `scripts/run-3070.bat|.sh` o `scripts/run-5070ti.bat|.sh` (levanta modelo + LiteLLM + ngrok)
-
-Cliente Hermes (esta u otra maquina, Linux o Windows):
-2. Primera vez en Linux: `agentes/install-hermes.sh`
-3. CLI: `agentes/run-hermes.sh` (o `agentes/run-hermes.bat` en Windows)
-4. ACP Client / Rina en Cursor: recargar la ventana y conectar "Hermes Agent". El wrapper es `agentes/run-hermes-acp.sh`.
-
-Hermes siempre habla con la LLM remota por ngrok. En Linux no hace falta GPU.
+1. `scripts/run-3070.bat|.sh` o `scripts/run-5070ti.bat|.sh` (levanta solo llama-server en puerto 7776)
+2. Para modo standalone: `scripts/run-standalone.bat|.sh`
 
 ## Endpoints
 
-- Hermes: `https://correct-ibex-charmed.ngrok-free.app/v1`  modelo `local`  api_key `any`
 - llama-server (local): `http://127.0.0.1:7776/v1`
-- LiteLLM (local): `http://127.0.0.1:7777/v1`
+- Chat UI: `http://127.0.0.1:7776`
+- API Docs: `http://127.0.0.1:7776/docs`
+- Health: `http://127.0.0.1:7776/health`
 
-## Contexto
+## Para VS Code / Cursor / OpenWebUI / LibreChat
 
-Editar `scripts/config.cmd` (Windows) o `scripts/config.sh` (Linux) (`CTX_3070_*` / `CTX_5070TI_*`). Hermes pide 65536 minimo. Al lanzar un modelo ese valor se copia a LiteLLM y a `agentes/hermes/config.yaml`.
+```
+Base URL: http://127.0.0.1:7776/v1   (o http://TU_IP:7776/v1 en LAN)
+Model:    local
+API Key:  (vacío)
+```
 
-## Modelos
+## Modelos (reales para 3070 8GB)
 
-- Qwen3.6-35B-A3B (3070: IQ1_M, 5070 Ti: IQ3_XXS)
-- Qwen3.8-27B (3070: Q4_K_XL, 5070 Ti: Q4_K_M)
-- Qwen3-8B (3070/5070 Ti: Q4_K_M)
-- Qwen3-Next-80B UD-TQ1_0
-- Bonsai 2 27B PTQ1_0 (5070 Ti, fork PrismML de llama.cpp)
+- Qwen3.6-35B-A3B UD-IQ1_M — 3.1 GB VRAM, 24 TPS
+- Qwen3.6-35B-A3B IQ2_S — 3.0 GB VRAM, 24 TPS
+- Qwen3.8-27B UD-IQ2_XXS — 7.9 GB VRAM, 6 TPS
+- Qwen3-8B UD-IQ1_M — 6.6 GB VRAM, **82 TPS, 64K ctx** ← mejor para código
+- Bonsai 2 27B PTQ1_0 — ~4.5 GB VRAM, 21 TPS (requiere `llamacpp-prism`)
 
-No pidas API keys de nube. Para parar el stack, usa la ventana del run-*.bat o Enter en el run-*.sh.
+## Configuración
+
+- Windows: `scripts/config.cmd`
+- Linux: `scripts/config.sh`
+
+KV cache `q4_0` optimizado para 8GB VRAM. Contextos: 8K (modelos 35B/27B) o 64K (modelo 8B).

@@ -1,46 +1,58 @@
 # LlamaCCP
 
-Stack local de LLMs con llama.cpp + LiteLLM + Hermes Agent.
+Stack local de LLMs con llama.cpp (standalone) para RTX 3070 / 5070 Ti.
 
 ## GPU soportadas
-- RTX 3070 (8GB): IQ1_M / Q4_K_XL / Qwen3-8B Q4_K_M
-- RTX 5070 Ti (16GB): IQ3_XXS / Q4_K_M / Qwen3-8B Q4_K_M / Bonsai 2 PTQ1_0
+- RTX 3070 (8GB): UD-IQ1_M / IQ2_S / UD-IQ2_XXS / UD-IQ1_M (64K) / PTQ1_0
+- RTX 5070 Ti (16GB): UD-IQ3_XXS / UD-Q4_K_M / UD-Q4_K_M / PTQ1_0
 
-## Modelos
+## Modelos (reales, descargados)
 
-- Qwen3.6-35B-A3B (3070: UD-IQ1_M, 5070 Ti: UD-IQ3_XXS)
-- Qwen3.8-27B (3070: UD-Q4_K_XL, 5070 Ti: UD-Q4_K_M)
-- Qwen3-8B (3070/5070 Ti: UD-Q4_K_M)
-- Qwen3-Next-80B-A3B-Instruct (UD-TQ1_0)
-- Bonsai 2 27B (PTQ1_0, Prism ML; requiere `llamacpp-prism`)
+| Modelo | 3070 8GB | 5070 Ti 16GB | Notas |
+|--------|----------|--------------|-------|
+| Qwen3.6-35B-A3B UD-IQ1_M | ✅ 3.1 GB VRAM | — | Optimizado |
+| Qwen3.6-35B-A3B IQ2_S | ✅ 3.0 GB VRAM | — | Alternativo |
+| Qwen3.8-27B UD-IQ2_XXS | ✅ 7.9 GB VRAM | — | Justo |
+| Qwen3-8B UD-IQ1_M | ✅ 6.6 GB VRAM (64K ctx) | ✅ | **Mejor para código** |
+| Bonsai 2 27B PTQ1_0 | ✅ ~4.5 GB VRAM | ✅ | Requiere `llamacpp-prism` |
+| Qwen3.6-35B UD-IQ3_XXS | ❌ | ✅ | |
+| Qwen3.8-27B UD-Q4_K_M | ❌ | ✅ | |
+| Qwen3-8B UD-Q4_K_M | ❌ | ✅ | |
 
 ## Como arrancar
 
 ### Windows (PC con GPU)
-1. Descargar modelos: `powershell -File scripts\download-unsloth-models.ps1`
-   Bonsai 2: `powershell -File scripts\download-bonsai.ps1`
-2. Arrancar stack (esta maquina, con GPU): `scripts\run-3070.bat` o `scripts\run-5070ti.bat`
-3. Lanzar Hermes (esta maquina u otra): `agentes\run-hermes.bat`
+1. `scripts\run-3070.bat` o `scripts\run-5070ti.bat`
+   - Menú interactivo, elige modelo
+   - Levanta solo `llama-server` en puerto 7776
+   - **Sin** LiteLLM, **sin** ngrok, **sin** Hermes
 
-### Linux (cliente Hermes contra LLM remota)
-1. Instalar Hermes una vez: `agentes/install-hermes.sh`
-2. En la PC con GPU, dejar el stack arriba (`run-3070` / `run-5070ti`)
-3. En esta maquina: `agentes/run-hermes.sh`
-4. En Cursor, ACP Client: conectar **Hermes Agent** (usa `agentes/run-hermes-acp.sh`). Recarga la ventana si no aparece.
+### Linux
+1. `scripts/run-3070.sh` o `scripts/run-5070ti.sh`
+   - Mismo menú, mismo resultado
 
-Hermes habla solo con LiteLLM por ngrok (`https://correct-ibex-charmed.ngrok-free.app/v1`, modelo `local`, api_key `any`). No hace falta GPU en el cliente.
-
-Si tambien queres levantar el stack en Linux: `scripts/download-unsloth-models.sh` y luego `scripts/run-3070.sh` o `scripts/run-5070ti.sh` (hace falta `llama-server` en `llamacpp-cuda13/` o en el PATH, venv con LiteLLM, y ngrok autenticado). Para Bonsai 2 hace falta el fork Prism en `llamacpp-prism/`.
+### Modo standalone (solo llama-server)
+- `scripts\run-standalone.bat` / `scripts/run-standalone.sh`
+- Solo llama-server, puerto 7776, firewall abierto
 
 ## Endpoints
 
-- Hermes: `https://correct-ibex-charmed.ngrok-free.app/v1`  modelo `local`  api_key `any`
 - llama-server (local): `http://127.0.0.1:7776/v1`
-- LiteLLM (local): `http://127.0.0.1:7777/v1`
+- Chat UI web: `http://127.0.0.1:7776`
+- API Docs (Swagger): `http://127.0.0.1:7776/docs`
+- Health: `http://127.0.0.1:7776/health`
 
-## Configuracion
+## Para VS Code / Cursor / OpenWebUI / LibreChat
+
+```
+Base URL: http://127.0.0.1:7776/v1   (o http://TU_IP:7776/v1 en LAN)
+Model:    local
+API Key:  (vacío)
+```
+
+## Configuración
 
 - Windows: `scripts/config.cmd`
 - Linux: `scripts/config.sh`
 
-Ahi se ajustan CTX, puertos, API key y `NGROK_URL` / `HERMES_BASE_URL`.
+CTX, puertos, batch sizes, KV cache (q4_0 optimizado para 8GB).
